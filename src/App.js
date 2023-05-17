@@ -51,12 +51,7 @@ class App extends React.Component {
       .then(() => {
         this.setState(({ movies }) => {
           const newMovieList = movies.map((movie) =>
-            movie.id === filmId
-              ? {
-                  ...movie,
-                  rateValue: rate,
-                }
-              : { ...movie }
+            movie.id === filmId ? { ...movie, rateValue: rate } : { ...movie }
           )
           return { movies: newMovieList }
         })
