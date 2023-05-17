@@ -1,0 +1,92 @@
+.card {
+  border-radius: 0;
+  font-family: Inter;
+  font-size: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  display: grid;
+  grid-template-columns: 60px auto;
+  grid-template-rows: repeat(3, auto);
+  grid-template-areas:
+    'image info'
+    'content content'
+    ' . stars';
+  gap: 8px;
+}
+
+.image {
+  grid-area: image;
+  width: 60px;
+  height: 90px;
+  display: flex;
+  align-self: center;
+}
+
+.info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin: 0;
+}
+
+.content {
+  grid-area: content;
+}
+
+.stars {
+  grid-area: stars;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.title {
+  margin: 0;
+}
+
+.date {
+  color: #827e7e;
+}
+
+.genre {
+  margin-top: 5px;
+}
+
+.stars {
+  display: flex;
+  justify-content: right;
+}
+
+@media screen and (min-width: 992px) {
+  .card {
+    position: relative;
+    display: grid;
+    border-radius: 0;
+    height: 280px;
+    padding: 0;
+    grid-template-columns: 180px auto;
+    grid-template-rows: repeat(3, auto);
+    grid-template-areas:
+      'image info'
+      'image content'
+      'image stars';
+  }
+
+  .image {
+    width: 180px;
+    height: 100%;
+  }
+
+  .info {
+    margin-top: 10px;
+    width: 290px;
+  }
+  .stars {
+    position: absolute;
+    bottom: 15px;
+  }
+}
