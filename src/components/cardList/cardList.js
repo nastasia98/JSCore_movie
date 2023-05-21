@@ -2,19 +2,26 @@ import { Col, Row } from 'antd'
 import PropTypes from 'prop-types'
 
 import Card from '../card/card'
-import Loader from '../../helpers/loader'
-import Error from '../../helpers/error'
+import Loader from '../loader/loader'
+import Error from '../error/error'
 
 import './cardList.css'
 
-export default function CardList({ movies, loading, error, errorMessage, rateMovie }) {
+export default function CardList({ movies, status, rateMovie }) {
   const movieCards = movies.map((movie) => (
     <Col lg={12} xs={24} key={movie.id}>
       <Card {...movie} rateMovie={rateMovie} />
     </Col>
   ))
-  const toggleLoading = loading ? <Loader /> : movieCards
-  const content = error ? <Error message={errorMessage} /> : toggleLoading
+
+  let content
+  if (status === 'loading') {
+    content = <Loader />
+  } else if (status === 'error') {
+    content = <Error />
+  } else {
+    content = movieCards
+  }
 
   return (
     <div className="list">
@@ -25,16 +32,12 @@ export default function CardList({ movies, loading, error, errorMessage, rateMov
 
 CardList.defaultProps = {
   movies: [],
-  loading: true,
-  error: false,
-  errorMessage: null,
+  status: '',
   rateMovie: () => {},
 }
 
 CardList.propTypes = {
   movies: PropTypes.arrayOf(PropTypes.object),
-  loading: PropTypes.bool,
-  error: PropTypes.bool,
-  errorMessage: PropTypes.string,
+  status: PropTypes.string,
   rateMovie: PropTypes.func,
 }

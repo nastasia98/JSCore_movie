@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 
 import CardList from '../cardList/cardList'
 import Pagination from '../pagination/pagination'
-import Loader from '../../helpers/loader'
 
 class RatesTab extends React.Component {
   constructor() {
@@ -27,18 +26,12 @@ class RatesTab extends React.Component {
   }
 
   render() {
-    const { moviesRated, loading, error, errorMessage, totalRated } = this.props
+    const { moviesRated, status, totalRated } = this.props
     const { page } = this.state
     return (
       <Space direction="vertical" align="center">
-        {moviesRated ? (
-          <CardList movies={moviesRated} loading={loading} error={error} errorMessage={errorMessage} />
-        ) : (
-          <Loader />
-        )}
-        {moviesRated.length && !loading ? (
-          <Pagination total={totalRated} page={page} selectPage={this.onSelectPage} />
-        ) : null}
+        {moviesRated && <CardList movies={moviesRated} status={status} />}
+        {moviesRated.length !== 0 && <Pagination total={totalRated} page={page} selectPage={this.onSelectPage} />}
       </Space>
     )
   }
@@ -46,17 +39,13 @@ class RatesTab extends React.Component {
 
 RatesTab.defaultProps = {
   moviesRated: [],
-  loading: true,
-  error: false,
-  errorMessage: null,
+  status: '',
   totalRated: 0,
 }
 
 RatesTab.propTypes = {
   moviesRated: PropTypes.arrayOf(PropTypes.object),
-  loading: PropTypes.bool,
-  error: PropTypes.bool,
-  errorMessage: PropTypes.string,
+  status: PropTypes.string,
   totalRated: PropTypes.number,
 }
 

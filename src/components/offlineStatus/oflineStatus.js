@@ -9,13 +9,11 @@ function StatusMessage({ status }) {
   const success = {
     type: 'success',
     content: 'Соеденение установлено',
-    duration: 3,
   }
 
   const error = {
     type: 'error',
     content: 'Соединение прервано',
-    duration: 3,
   }
 
   const reply = status ? success : error
@@ -32,7 +30,7 @@ function ConnectionStatus() {
 }
 
 StatusMessage.defaultProps = {
-  status: true,
+  status: null,
 }
 
 StatusMessage.propTypes = {

@@ -32,6 +32,7 @@
 
 .content {
   grid-area: content;
+  padding-right: 10px;
 }
 
 .stars {

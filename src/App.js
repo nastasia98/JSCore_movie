@@ -1,11 +1,11 @@
 import React from 'react'
 import { Row, Space, Tabs } from 'antd'
 
-import MovieService from './components/movieService/movieService'
-import { GenreProvider } from './components/movieService/genreContext'
+import MovieService from './services/movieService'
+import { GenreProvider } from './services/genreContext'
 import SearchTab from './components/searchTab/searchTab'
 import RatesTab from './components/ratesTab/ratesTab'
-import Info from './helpers/info'
+import Info from './components/info/info'
 import ConnectionStatus from './components/offlineStatus/oflineStatus'
 
 import './App.css'
@@ -13,10 +13,11 @@ import './App.css'
 class App extends React.Component {
   movieService = new MovieService()
 
+  genres = null
+
   constructor() {
     super()
     this.state = {
-      allGenre: null,
       guestKey: '',
       movies: [],
       totalResults: 1,
@@ -24,9 +25,7 @@ class App extends React.Component {
       totalRatedResults: 1,
       title: '',
       page: 1,
-      loading: false,
-      error: false,
-      errorMessage: '',
+      status: '',
       info: false,
     }
   }
@@ -37,11 +36,10 @@ class App extends React.Component {
       .then((data) => {
         this.setState({ guestKey: data.guest_session_id })
       })
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
-    this.movieService
-      .getGenre()
-      .then((data) => this.setState({ allGenre: [data] }))
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
+      .catch(() => this.setState({ status: 'error' }))
+    this.movieService.getGenre().then((data) => {
+      this.genres = data.genres
+    })
   }
 
   rateMovie = (filmId, rate) => {
@@ -56,52 +54,53 @@ class App extends React.Component {
           return { movies: newMovieList }
         })
       })
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
+      .catch(() => this.setState({ status: 'error' }))
   }
 
   showMovies = (name, page) => {
-    this.setState({ loading: true })
+    this.setState({ status: 'loading' })
     this.movieService
       .getMoviesForPage(name, page)
       .then((data) => {
         if (!data.length) {
-          return this.setState({ movies: [], info: true, loading: false })
+          return this.setState({ movies: [], status: 'ok', info: true })
         }
-        this.setState({ movies: data, loading: false, info: false })
+        this.setState({ movies: data, status: 'ok', info: false })
       })
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
+      .catch(() => this.setState({ status: 'error' }))
   }
 
   showRateMovies = (page) => {
     const { guestKey } = this.state
-    this.setState({ loading: true })
+    this.setState({ status: 'loading' })
     this.movieService
       .getRatedMovies(guestKey, page)
-      .then((data) => this.setState({ moviesRated: data, loading: false }))
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
+      .then((data) => this.setState({ moviesRated: data, status: 'ok' }))
+      .catch(() => this.setState({ status: 'error' }))
     this.movieService
       .getAllRatedMovies(guestKey)
       .then((data) => {
         this.setState({ totalRatedResults: data.totalResults })
       })
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
+      .catch(() => this.setState({ status: 'error' }))
   }
 
   searchMovies = (name) => {
     const { page } = this.state
+    this.setState({ info: false })
     if (name.length > 0) {
       this.showMovies(name, page)
       this.setState({ title: name, page: 1 })
     }
     if (!name.length) {
-      this.setState({ movies: [], title: name, info: false })
+      this.setState({ movies: [], title: name })
     }
     this.movieService
       .getAllMovies(name)
       .then((data) => {
         this.setState({ totalResults: data.totalResults })
       })
-      .catch((err) => this.setState({ error: true, errorMessage: err.message }))
+      .catch(() => this.setState({ status: 'error' }))
   }
 
   onSelectPage = (pageNum) => {
@@ -111,8 +110,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { movies, loading, error, errorMessage, info, moviesRated, allGenre, totalResults, page, totalRatedResults } =
-      this.state
+    const { movies, status, info, moviesRated, totalResults, page, totalRatedResults } = this.state
 
     const items = [
       {
@@ -121,9 +119,7 @@ class App extends React.Component {
         children: (
           <SearchTab
             movies={movies}
-            loading={loading}
-            error={error}
-            errorMessage={errorMessage}
+            status={status}
             total={totalResults}
             page={page}
             searchMovies={this.searchMovies}
@@ -138,9 +134,7 @@ class App extends React.Component {
         children: (
           <RatesTab
             moviesRated={moviesRated}
-            loading={loading}
-            error={error}
-            errorMessage={errorMessage}
+            status={status}
             totalRated={totalRatedResults}
             showRateMovies={this.showRateMovies}
           />
@@ -152,7 +146,7 @@ class App extends React.Component {
       <>
         <Row className="app">
           <Space direction="vertical" align="center" style={{ width: '100%' }}>
-            <GenreProvider value={allGenre}>
+            <GenreProvider value={this.genres}>
               <Tabs defaultActiveKey="1" centered destroyInactiveTabPane items={items} />
             </GenreProvider>
             {info && <Info />}

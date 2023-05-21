@@ -2,10 +2,10 @@ import { Tag, Typography, Rate } from 'antd'
 import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 
-import cutText from '../../helpers/cutText'
+import cutText from '../../services/cutText'
 import noPost from '../../image/no_image.jpg'
-import { GenreConsumer } from '../movieService/genreContext'
-import Progress from '../../helpers/progress'
+import { GenreConsumer } from '../../services/genreContext'
+import Progress from '../progress/progress'
 
 import './card.css'
 
@@ -52,9 +52,8 @@ function Card(props) {
         <div className="date">{formatDate}</div>
         <div className="genres">
           <GenreConsumer>
-            {(allGenre) =>
+            {(genres) =>
               genre.map((genreId) => {
-                const { genres } = allGenre[0]
                 const tag = genres.filter((item) => item.id === genreId)
                 return (
                   <Tag className="genre" key={genreId}>
@@ -80,25 +79,24 @@ function Card(props) {
 }
 
 Card.defaultProps = {
-  genre: [],
-  date: '',
+  date: null,
   id: 0,
   vote: 0,
   title: '',
   imgUrl: '',
   description: '',
+  rateValue: null,
 }
 
 Card.propTypes = {
-  genre: PropTypes.arrayOf(PropTypes.object),
   id: PropTypes.number,
   vote: PropTypes.number,
   title: PropTypes.string,
   imgUrl: PropTypes.string,
   description: PropTypes.string,
   rateMovie: PropTypes.func.isRequired,
-  rateValue: PropTypes.func.isRequired,
-  date: PropTypes.instanceOf(Date),
+  rateValue: PropTypes.number,
+  date: PropTypes.string,
 }
 
 export default Card
